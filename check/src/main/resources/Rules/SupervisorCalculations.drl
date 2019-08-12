@@ -1,0 +1,98 @@
+package Rules;
+
+import com.ns.check.Model.UserDetails;
+import com.ns.check.Model.ResultantModel;
+global Float ccAmount;
+global Float orderAmount;
+
+global ResultantModel rm;
+
+
+
+rule "for other values to supervisor"
+salience 10
+when
+userSetailObject:UserDetails()
+then
+    rm.setDistributorId(userSetailObject.getDistributorId());
+    rm.setDistributorLevel(userSetailObject.getLevel());
+    rm.setSponserLevel(userSetailObject.getSponserid());
+ end
+
+
+
+
+        rule "Bonus for supervisor by supervisor downlines"
+                    salience 1
+                    activation-group "purchase"
+                    when
+                    userDetailObject:UserDetails(level==3 && nextLevel==3)
+                    then
+                    System.out.println("Only Case Credits");
+                     System.out.println("Non Manager CC->"+ccAmount);
+                     rm.setNonManagerCc(ccAmount);
+                     rm.print();
+        end
+
+
+        rule "Bonus for supervisor by Asst.supervisor downlines"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==3 && nextLevel==2)
+                then
+                System.out.println("Only 3% of violume Bonus");
+                float volumeBonus=(3*orderAmount)/100;
+                System.out.println("Volume Bonus"+(3*orderAmount)/100);
+                System.out.println("Non Mnager CC->"+ccAmount);
+                rm.setVolumeBonus(volumeBonus);
+                 rm.setNonManagerCc(ccAmount);
+                 rm.print();
+
+         end
+
+        rule "Bonus for supervisor by novus downlines"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==3 && nextLevel==1)
+                then
+                System.out.println("He is having 15% Novus profit and 8 % Novus Bonus");
+
+                float novusProfit=(15*orderAmount)/100;
+                System.out.println("Novus Profit is -> "+(15*orderAmount)/100);
+                float novusBonus=(8*orderAmount)/100;
+                System.out.println("Novus Bonus is -> "+(8*orderAmount)/100);
+                System.out.println("Novus CC is ->"+ccAmount);
+
+                System.out.println("Non Manager CC->"+ccAmount);
+
+                rm.setNovusBonus(novusBonus);
+                rm.setNovusProfit(novusProfit);
+                rm.setNonManagerCc(ccAmount);
+                rm.setNovusCc(ccAmount);
+                rm.print();
+
+        end
+
+         rule "Bonus for supervisor for his self purchase"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==3 && nextLevel==0)
+                then
+                System.out.println("He is having 30%Direct Discount and 8 % personal Discount");
+                System.out.println("Personal  CC is ->"+ccAmount);
+
+                 float directDiscount=(30*orderAmount)/100;
+                System.out.println("Direct Discount Amount is ->"+(30*orderAmount)/100);
+
+                 float personalDiscount=(8*orderAmount)/100;
+                 System.out.println("Personal Discount Amount is ->"+(8*orderAmount)/100);
+
+                 rm.setPersonalCc(ccAmount);
+                 rm.setDirectDiscount(directDiscount);
+                 rm.setPersonalDiscount(personalDiscount);
+                 rm.print();
+                           end
+

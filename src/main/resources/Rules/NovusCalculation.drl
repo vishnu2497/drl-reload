@@ -1,0 +1,58 @@
+package Rules;
+
+import com.ns.check.Model.UserDetails;
+import com.ns.check.Model.ResultantModel;
+
+global Float ccAmount;
+global Float orderAmount;
+
+global ResultantModel rm;
+
+
+rule "for other values"
+salience 10
+agenda-group "1"
+
+when
+userSetailObject:UserDetails()
+then
+    rm.setDistributorId(userSetailObject.getDistributorId());
+    rm.setDistributorLevel(userSetailObject.getLevel());
+    rm.setSponserLevel(userSetailObject.getSponserLevel());
+ end
+
+
+
+rule "Bonus for  novus by self purchase"
+        salience 1
+        agenda-group "1"
+        when
+        userDetailObject:UserDetails(level==1 && nextLevel==0)
+
+        then
+//        System.out.println("He is eligible for 15%direct discount");
+
+
+//        System.out.println("personal CC ->"+ccAmount);
+         float directDiscount=(15*orderAmount)/100;
+//        System.out.println("Direct Discount 15%"+directDiscount);
+
+
+
+    rm.setDirectDiscount(directDiscount);
+    rm.setPersonalCc(ccAmount);
+//rm.setDistributorId(userDetailObject.getDistributorId());
+//rm.print();
+            end
+
+//Have to ask where i am novus and i am having an another person from my downline what can i get as Novus
+     rule "Bonus for Novus by novus and his downlines"
+            salience 1
+            agenda-group "1"
+            when
+            userDetailObject:UserDetails(level==1 && nextLevel==1)
+            then
+            System.out.println("Only Case Credits");
+             System.out.println("Non Mnager CC->"+ccAmount);
+             rm.setNonManagerCc(ccAmount);
+            end

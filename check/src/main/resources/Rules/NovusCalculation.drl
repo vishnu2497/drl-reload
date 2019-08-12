@@ -1,0 +1,65 @@
+package Rules;
+
+import com.ns.check.Model.UserDetails;
+import com.ns.check.Model.ResultantModel;
+
+global Float ccAmount;
+global Float orderAmount;
+
+global ResultantModel rm;
+
+
+rule "for other values"
+salience 10
+when
+userSetailObject:UserDetails()
+then
+    rm.setDistributorId(userSetailObject.getDistributorId());
+    rm.setDistributorLevel(userSetailObject.getLevel());
+    rm.setSponserLevel(userSetailObject.getSponserid());
+
+
+ end
+
+
+
+rule "Bonus for  novus by self purchase"
+        salience 1
+        activation-group "purchase"
+        when
+        userDetailObject:UserDetails(level==1 && nextLevel==0)
+//        ResultantModelObject:ResultantModel();
+//        purchaseObject:Purchase()
+        then
+        System.out.println("He is eligible for 15%direct discount");
+//        System.out.println(purchaseObject.getCc());
+//Should be in the Resultant Model But For checking We Must Printing here
+
+//PurchaseObject is not coming here we want to cvheck
+    System.out.println("personal CC ->"+ccAmount);
+    System.out.println("Direct Discount 15%"+(15*orderAmount)/100);
+
+    float directDiscount=(15*orderAmount)/100;
+
+rm.setDirectDiscount(directDiscount);
+rm.setPersonalCc(ccAmount);
+//rm.setDistributorId(userDetailObject.getDistributorId());
+rm.print();
+    System.out.println("Hi after print");
+
+        end
+
+
+
+//Have to ask where i am novus and i am having an another person from my downline what can i get as Novus
+     rule "Bonus for Novus by novus and his downlines"
+            salience 1
+            activation-group "purchase"
+            when
+            userDetailObject:UserDetails(level==1 && nextLevel==1)
+//             purchaseObject:Purchase()
+            then
+            System.out.println("Only Case Credits");
+             System.out.println("Non Mnager CC->"+ccAmount);
+             rm.setNonManagerCc(ccAmount);
+            end

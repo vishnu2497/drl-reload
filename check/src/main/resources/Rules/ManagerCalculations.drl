@@ -1,0 +1,135 @@
+package Rules;
+
+import com.ns.check.Model.UserDetails;
+import com.ns.check.Model.ResultantModel
+
+global Float ccAmount;
+global Float orderAmount;
+global ResultantModel rm;
+
+
+rule "for other values to manager"
+salience 10
+when
+userSetailObject:UserDetails()
+then
+    rm.setDistributorId(userSetailObject.getDistributorId());
+    rm.setDistributorLevel(userSetailObject.getLevel());
+ end
+
+
+        rule "self purchase by manager"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==5 && nextLevel==0)
+                then
+                System.out.println("He is eligible for 30%direct discount 18% personal discount");
+                 System.out.println("Personal  CC is ->"+ccAmount);
+               float  directDiscount=(30*orderAmount)/100;
+                 System.out.println("Direct Discount Amount is ->"+(30*orderAmount)/100);
+                 float personalDiscount=(18*orderAmount)/100;
+                 System.out.println("Personal Discount Amount is ->"+(18*orderAmount)/100);
+
+               rm.setPersonalCc(ccAmount);
+               rm.setDirectDiscount(directDiscount);
+               rm.setPersonalDiscount(personalDiscount);
+               rm.print();
+
+
+        end
+
+        rule "Bonus for  manager by manage and his downlines"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==5 && nextLevel==5)
+                then
+                System.out.println("Only Case Credits is available");
+                System.out.println("Non Manager   CC is ->"+ccAmount);
+
+                 rm.setNonManagerCc(ccAmount);
+                                   rm.print();
+        end
+
+
+
+        rule "Bonus for Manager by Assistant.Manager and his downlines"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==5 && nextLevel==4)
+                then
+                System.out.println("He is eligible for 5% Volume Bonus");
+                float volumeBonus=(5*orderAmount)/100;
+                System.out.println("Volume Bonus is ->"+(5*orderAmount)/100);
+                System.out.println("Non Manager   CC is ->"+ccAmount);
+
+
+                 rm.setVolumeBonus(volumeBonus);
+                                                   rm.setNonManagerCc(ccAmount);
+                                                   rm.print();
+
+        end
+
+        rule "Bonus for Manager by supervisor and his downlines"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==5 && nextLevel==3)
+                then
+                System.out.println("He is eligible for 10% Volume Bonus");
+
+                float volumeBonus=(10*orderAmount)/100;
+                System.out.println("Volume Bonus is ->"+(10*orderAmount)/100);
+                                System.out.println("Non Manager   CC is ->"+ccAmount);
+
+                                 rm.setVolumeBonus(volumeBonus);
+                                                                                   rm.setNonManagerCc(ccAmount);
+                                                                                   rm.print();
+        end
+
+        rule "Bonus for Manager by Assistant.supervisor and his downlines"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==5 && nextLevel==2)
+                then
+                System.out.println("He is eligible for 13% Volume Bonus");
+                 float volumeBonus=(13*orderAmount)/100;
+                System.out.println("Volume Bonus is ->"+(13*orderAmount)/100);
+                                System.out.println("Non Manager   CC is ->"+ccAmount);
+                                  rm.setVolumeBonus(volumeBonus);
+                                   rm.setNonManagerCc(ccAmount);
+                                   rm.print();
+        end
+
+        rule "Bonus for Manager by Novus  and his downlines"
+                salience 1
+                activation-group "purchase"
+                when
+                userDetailObject:UserDetails(level==5 && nextLevel==1)
+                then
+                System.out.println("He is eligible for 15% Novus Profit 18% Novus Bonus ");
+
+                float novusProfit=(15*orderAmount)/100;
+                System.out.println("Novus Profit is -> "+(15*orderAmount)/100);
+                float novusBonus=(18*orderAmount)/100;
+                System.out.println("Novus Bonus is -> "+(18*orderAmount)/100);
+                System.out.println("Novus CC is ->"+ccAmount);
+                System.out.println("Non Manager CC->"+ccAmount);
+
+
+                 rm.setNovusBonus(novusBonus);
+                                 rm.setNovusProfit(novusProfit);
+                                 rm.setNonManagerCc(ccAmount);
+                                 rm.setNovusCc(ccAmount);
+                                 rm.print();
+
+
+        end
+
+
+
+
+//        Funcition Declaration for storing in Database
